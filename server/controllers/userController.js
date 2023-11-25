@@ -370,6 +370,38 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  try {
+    // Assuming you store the token in the request (e.g., in a cookie)
+    const token = req.cookies.accessToken;
+
+    // Invalidate the token. This could be deleting it from the database
+    // or marking it as inactive, depending on your implementation.
+    await invalidateToken(token);
+
+    // Clear the token from the response (e.g., clearing cookies)
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+async function invalidateToken(token) {
+  // Assuming the refresh token is stored in the 'refresh_tokens' table in your database
+  // and it's associated with the user's ID.
+  try {
+    // Delete the refresh token from the database
+    await pool.query("DELETE FROM refresh_tokens WHERE token = $1", [token]);
+  } catch (error) {
+    console.error("Error invalidating token:", error);
+    throw new Error("Failed to invalidate token.");
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -378,4 +410,5 @@ module.exports = {
   getUser,
   forgotPassword,
   resetPassword,
+  logoutUser,
 };
