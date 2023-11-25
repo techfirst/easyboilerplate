@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../db");
 const { validationResult } = require("express-validator");
+const { ServerClient } = require("postmark");
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -9,7 +10,7 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, email, password } = req.body;
+  const { firstname, lastname, company_name, email, password1 } = req.body;
 
   try {
     // Check if email already exists
@@ -22,22 +23,27 @@ const registerUser = async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password1, 10);
 
     // Insert the new user into the database and get the user's ID
     const newUser = await pool.query(
-      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id",
-      [name, email, hashedPassword]
+      "INSERT INTO users (firstname, lastname, company_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [firstname, lastname, company_name, email, hashedPassword]
     );
 
     // Use the new user's ID as the verification token
     const verificationToken = newUser.rows[0].id;
 
-    // Send a verification email to the user
-    sendVerificationEmail(res, name, email, verificationToken);
+    try {
+      // Send a verification email to the user
+      await sendVerificationEmail(res, firstname, email, verificationToken);
+    } catch (emailError) {
+      console.error("Failed to send verification email: ", emailError);
+      // Consider whether to delete the user or mark as unverified in case of email failure
+    }
 
     res.status(201).json({
-      message: "User registered successfully. Please verify your email.",
+      message: "User registered successfully. Please verify your e-mail.",
     });
   } catch (error) {
     console.error("Registration error: ", error);
@@ -71,13 +77,13 @@ const loginUser = async (req, res) => {
     if (!user.is_verified) {
       return res
         .status(403)
-        .json({ message: "Please verify your email first" });
+        .json({ message: "Please verify your e-mail first" });
     }
 
     // Generate JWT (access token)
     const accessToken = jwt.sign(
       { user_id: user.id },
-      process.env.ACCESS_TOKEN_SECRET,
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "15m" }
     );
 
@@ -89,9 +95,13 @@ const loginUser = async (req, res) => {
     );
 
     // Store refresh token in the database (optional but recommended for better control)
+    const expiresIn = 7; // days until expiration
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expiresIn);
+
     await pool.query(
-      "INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2)",
-      [user.id, refreshToken]
+      "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+      [user.id, refreshToken, expiresAt]
     );
 
     // Set cookies for access token and refresh token
@@ -108,6 +118,7 @@ const loginUser = async (req, res) => {
       })
       .json({
         message: "Logged in successfully",
+        success: true,
         user: {
           id: user.id,
           email: user.email,
@@ -122,34 +133,32 @@ const loginUser = async (req, res) => {
 const sendVerificationEmail = async (res, name, email, token) => {
   const client = new ServerClient(process.env.POSTMARK_API_KEY);
   try {
-    await client
-      .sendEmail({
-        From: "EasyImg.ai <stellan@techfirst.se>",
-        To: email,
-        Subject: "Verify your e-mail",
-        TextBody: `Hello ${name},
-      
-  Welcome to EasyImg.ai! We are glad that you want to become a user with us. To complete your registration and activate your account, please click the link below:
+    const response = await client.sendEmail({
+      From: "EasyImg.ai <stellan@techfirst.se>",
+      To: email,
+      Subject: "Verify your e-mail",
+      TextBody: `Hello ${name},
+        
+  Welcome to easyimg.ai - We are glad that you want to join us. To complete your registration and activate your account, please click the link below:
   
-  ${process.env.BASE_URL}/user/verify?token=${token}
+  ${process.env.BASE_URL}/verify-user/${token}
   
   If you cannot click on the link, copy and paste it into your web browser.
   
   If you did not request this e-mail, you can ignore it. It is possible that someone else has accidentally entered your email address.
   
   Best regards,
-  EasyImg.ai`,
-      })
-      .then((response) => {
-        res.json({ message: "Email sent successfully.", response });
-      })
-      .catch((error) => {
-        console.error("Error sending email via Postmark: ", error);
-        res.status(500).json(error);
-      });
+  easyimg.ai`,
+    });
+
+    // Send success response
+    res.json({ message: "Email sent successfully.", response });
   } catch (error) {
-    console.error("Additional error: ", error);
-    res.status(500).send("Failed to send email.");
+    console.error("Error sending email via Postmark: ", error);
+    // Check if headers have already been sent
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to send email." });
+    }
   }
 };
 
@@ -248,9 +257,38 @@ const refreshToken = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const result = await pool.query(
+      `
+        SELECT firstname, lastname, email, company_name, is_verified
+        FROM users
+        WHERE id = $1
+      `,
+      [userId]
+    );
+    const user = result.rows[0];
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.json({
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).send("Internal Server Error.");
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   refreshToken,
   verifyUser,
+  getUser,
 };
