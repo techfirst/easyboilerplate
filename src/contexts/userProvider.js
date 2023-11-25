@@ -13,13 +13,13 @@ export const UserProvider = ({ children }) => {
 
   async function getUser() {
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
-      const response = await axios.get(`${apiUrl}/user/getuser`, {
+      const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+      const response = await axios.get(`${apiUrl}/api/user/getuser`, {
         withCredentials: true,
       });
       const result = response.data;
       if (result.success) {
-        setUser(result.userData);
+        setUser(result.user);
       }
     } catch (error) {
       console.error("Authentication check error:", error);
@@ -33,6 +33,7 @@ export const UserProvider = ({ children }) => {
       value={{
         user,
         isChecking,
+        setUser,
       }}
     >
       {children}

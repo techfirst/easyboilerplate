@@ -1,39 +1,41 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserProvider } from "./contexts/userProvider";
-import Register from "./components/Register";
+import Register from "./components/register";
 import Login from "./components/loginForm";
-import ProtectedRoute from "./utils/ProtectedRoute";
+import ProtectedRoute from "./utils/protectedRoute";
 import UserProfile from "./components/user/userProfile";
 import VerifyUser from "./components/user/verifyUser";
+import "./App.css";
 
 const App = () => {
   return (
     <UserProvider>
       <Router>
         <div>
-          <Switch>
+          <Routes>
             <Route
-              exact
               path="/register"
-              component={Register}
+              element={<Register />}
             />
             <Route
-              exact
               path="/login"
-              component={Login}
+              element={<Login />}
             />
             <Route
-              exact
               path="/verify-user/:token"
-              component={VerifyUser}
+              element={<VerifyUser />}
             />
-            <ProtectedRoute
-              exact
+            <Route
               path="/user/profile"
-              component={UserProfile}
-            />
-          </Switch>
+              element={<ProtectedRoute />}
+            >
+              <Route
+                index
+                element={<UserProfile />}
+              />
+            </Route>
+          </Routes>
         </div>
       </Router>
     </UserProvider>

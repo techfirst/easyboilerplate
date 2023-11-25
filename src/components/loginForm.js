@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../contexts/userProvider";
+import "../App.css";
 
 const LoginForm = () => {
   const {
@@ -11,67 +12,82 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm();
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState(""); // State to handle login errors
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
 
   const onSubmit = async (data) => {
     setLoading(true);
+    setLoginError(""); // Reset login error message
+
     const apiUrl = process.env.REACT_APP_API_URL;
 
     try {
-      const response = await axios.post(`${apiUrl}/login`, data, {
+      const response = await axios.post(`${apiUrl}/api/login`, data, {
         withCredentials: true,
       });
+      console.log(response.data);
       if (response.data.success) {
-        setUser(response.data.userData);
-        navigate("/user/profiles"); // Adjust according to your routing
+        setUser(response.data.user);
+        navigate("/user/profile"); // Adjust according to your routing
       } else {
-        console.log("Login failed");
+        setLoginError("Login failed. Please try again."); // Setting custom error message
       }
     } catch (error) {
+      setLoginError(error.response?.data?.message || "Login error occurred.");
       console.error("Login error:", error);
     }
 
     setLoading(false);
   };
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="md:grid-cols-2 grid grid-cols-1 gap-[30px] mt-6"
-    >
-      <div className="md:col-span-2 col-span-1">
-        <input
-          type="email"
-          {...register("email", {
-            required: "Email is required",
-            pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-          })}
-          className="from-control"
-          placeholder="Email *"
-        />
-        {errors.email && <div className="error">{errors.email.message}</div>}
-      </div>
-
-      <div className="md:col-span-2 col-span-1">
-        <input
-          type="password"
-          {...register("password", { required: "Password is required" })}
-          className="from-control"
-          placeholder="Password *"
-        />
-        {errors.password && (
-          <div className="error">{errors.password.message}</div>
-        )}
-      </div>
-
-      <button
-        className="btn btn-primary mt-[10px]"
-        type="submit"
-        name="submit"
+    <div className="form-container">
+      <form
+        className="form-box"
+        onSubmit={handleSubmit(onSubmit)}
       >
-        {loading ? "Logging in..." : "Log In"}
-      </button>
-    </form>
+        <div className="form-input-group">
+          <input
+            type="email"
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                message: "Invalid email format",
+              },
+            })}
+            className="form-input"
+            placeholder="Email *"
+          />
+          {errors.email && (
+            <div className="error-message">{errors.email.message}</div>
+          )}
+        </div>
+
+        <div className="form-input-group">
+          <input
+            type="password"
+            {...register("password", { required: "Password is required" })}
+            className="form-input"
+            placeholder="Password *"
+          />
+          {errors.password && (
+            <div className="error-message">{errors.password.message}</div>
+          )}
+        </div>
+
+        {loginError && <div className="error-message">{loginError}</div>}
+
+        <button
+          className="form-button"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Log In"}
+        </button>
+      </form>
+    </div>
   );
 };
 
