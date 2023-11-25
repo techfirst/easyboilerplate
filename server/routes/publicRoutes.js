@@ -4,20 +4,21 @@ const {
   registerUser,
   loginUser,
   verifyUser,
+  forgotPassword,
+  resetPassword,
 } = require("../controllers/userController");
-const { check } = require("express-validator");
 
-const registrationValidationMiddleware = [
-  check("firstname").notEmpty().withMessage("Firstname is required"),
-  check("lastname").notEmpty().withMessage("Lastname is required"),
-  check("email").isEmail().withMessage("Invalid email address"),
-  check("password1")
-    .isLength({ min: 8 })
-    .withMessage("Password must be at least 8 characters long"),
-];
+const {
+  validateForgotPassword,
+  validateResetPassword,
+  validateRegistration,
+  validateLogin,
+} = require("../middleware/validate");
 
-router.post("/register", registrationValidationMiddleware, registerUser);
-router.post("/login", loginUser);
+router.post("/register", validateRegistration, registerUser);
+router.post("/login", validateLogin, loginUser);
 router.get("/verify-user", verifyUser);
+router.post("/forgot-password", validateForgotPassword, forgotPassword);
+router.post("/reset-password", validateResetPassword, resetPassword);
 
 module.exports = router;

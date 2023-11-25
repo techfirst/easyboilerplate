@@ -6,6 +6,8 @@ import Login from "./components/loginForm";
 import ProtectedRoute from "./utils/protectedRoute";
 import UserProfile from "./components/user/userProfile";
 import VerifyUser from "./components/user/verifyUser";
+import ForgotPassword from "./components/forgotPassword";
+import ResetPassword from "./components/resetPassword";
 import "./App.css";
 
 const App = () => {
@@ -21,6 +23,14 @@ const App = () => {
             <Route
               path="/login"
               element={<Login />}
+            />
+            <Route
+              path="/forgot-password"
+              element={<ForgotPassword />}
+            />
+            <Route
+              path="/reset-password/:token"
+              element={<ResetPassword />}
             />
             <Route
               path="/verify-user/:token"

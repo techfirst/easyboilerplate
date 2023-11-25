@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const pool = require("../db");
 const { validationResult } = require("express-validator");
 const { ServerClient } = require("postmark");
+const crypto = require("crypto");
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -134,12 +135,12 @@ const sendVerificationEmail = async (res, name, email, token) => {
   const client = new ServerClient(process.env.POSTMARK_API_KEY);
   try {
     const response = await client.sendEmail({
-      From: "EasyImg.ai <stellan@techfirst.se>",
+      From: process.env.SYSTEM_NAME + " <" + process.env.FROM_EMAIL + ">",
       To: email,
       Subject: "Verify your e-mail",
       TextBody: `Hello ${name},
         
-  Welcome to easyimg.ai - We are glad that you want to join us. To complete your registration and activate your account, please click the link below:
+  Welcome to ${process.env.SYSTEM_NAME} - We are glad that you want to join us. To complete your registration and activate your account, please click the link below:
   
   ${process.env.BASE_URL}/verify-user/${token}
   
@@ -148,7 +149,7 @@ const sendVerificationEmail = async (res, name, email, token) => {
   If you did not request this e-mail, you can ignore it. It is possible that someone else has accidentally entered your email address.
   
   Best regards,
-  easyimg.ai`,
+  ${process.env.SYSTEM_NAME}`,
     });
 
     // Send success response
@@ -285,10 +286,96 @@ const getUser = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  // Find user by email
+  const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
+  const user = userResult.rows[0];
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // Generate token
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  // Store token in the database with an expiration time
+  // Convert JavaScript timestamp to PostgreSQL timestamp
+  const expiresAt = new Date(Date.now() + 3600000).toISOString();
+
+  await pool.query(
+    "UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE id = $3",
+    [resetToken, expiresAt, user.id]
+  );
+
+  // Send email with reset link (implement sendPasswordResetEmail function)
+  sendPasswordResetEmail(user.email, resetToken);
+
+  res.json({ message: "Password reset email sent." });
+};
+
+const sendPasswordResetEmail = async (email, resetToken) => {
+  const client = new ServerClient(process.env.POSTMARK_API_KEY);
+  try {
+    const response = await client.sendEmail({
+      From: process.env.SYSTEM_NAME + " <" + process.env.FROM_EMAIL + ">",
+      To: email,
+      Subject: process.env.SYSTEM_NAME + " - Password reset request",
+      TextBody: `You have requested to reset your password. Please use the following link to set a new password: ${process.env.BASE_URL}/reset-password/${resetToken}
+
+If you did not request a password reset, please ignore this email.
+
+Best regards,
+${process.env.SYSTEM_NAME}`,
+    });
+
+    console.log("Password reset email sent successfully.", response);
+  } catch (error) {
+    console.error("Error sending password reset email via Postmark: ", error);
+    throw new Error("Failed to send password reset email.");
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+  try {
+    // Find user by reset token and check if token is expired
+    const userResult = await pool.query(
+      "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()",
+      [token]
+    );
+    const user = userResult.rows[0];
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired password reset token." });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user's password and clear reset token fields
+    await pool.query(
+      "UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2",
+      [hashedPassword, user.id]
+    );
+
+    res.json({ success: true, message: "Password successfully reset" });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   refreshToken,
   verifyUser,
   getUser,
+  forgotPassword,
+  resetPassword,
 };
