@@ -34,6 +34,7 @@ const registerUser = async (req, res) => {
 
     // Use the new user's ID as the verification token
     const verificationToken = newUser.rows[0].id;
+    console.log(verificationToken);
 
     try {
       // Send a verification email to the user
@@ -48,7 +49,9 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Registration error: ", error);
-    res.status(500).send("Failed to register user.");
+    if (!res.headersSent) {
+      res.status(500).send("Failed to register user.");
+    }
   }
 };
 
