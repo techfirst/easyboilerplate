@@ -4,62 +4,119 @@
   align-items: center;
   padding: 1rem 2rem;
   background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .header-brand {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
-}
-
-.header-nav {
-  display: flex;
+  color: #74aa9c;
 }
 
 .nav-link {
-  margin-left: 2rem;
+  padding: 0.5rem 1rem;
   text-decoration: none;
-  color: #333;
+  color: #74aa9c;
   font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #5e9380;
 }
 
 .menu-icon {
   display: none;
-  flex-direction: column;
   cursor: pointer;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 25px;
 }
 
 .menu-icon div {
   background-color: #333;
-  margin: 0.3rem 0;
   height: 2px;
   width: 25px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: 50%;
 }
 
-@media (max-width: 768px) {
+.menu-icon.open div:first-child {
+  transform: translateY(8.5px) rotate(45deg);
+}
+
+.menu-icon.open div:nth-child(2) {
+  /* Optionally, fade out the middle line */
+  opacity: 0;
+}
+
+.menu-icon.open div:last-child {
+  transform: translateY(-8.5px) rotate(-45deg);
+}
+
+.overlay-content a:active,
+.overlay-content a:focus,
+.overlay-content button:active,
+.overlay-content button:focus {
+  color: #fff;
+  background-color: transparent;
+}
+
+.overlay {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: width 0.5s ease; 
+}
+
+.overlay.open {
+  width: 100%;
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+  min-width: 200px; /* Adjust as needed */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.overlay-content a,
+.overlay-content button {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 10px 20px;
+  margin: 10px 0;
+  background-color: transparent;
+  border-radius: 5px;
+  outline: none;
+}
+
+@media screen and (max-width: 768px) {
   .header-nav {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: #fff;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-  }
-
-  .header-nav.is-open {
-    max-height: 300px; /* Adjust as needed */
-  }
-
-  .nav-link {
-    margin: 0.5rem 0;
+    display: none;
   }
 
   .menu-icon {
     display: flex;
+  }
+
+  .overlay.open {
+    width: 100%; /* Full width */
+    transition: width 0.5s ease, padding 0.5s step-start;
   }
 }
