@@ -3,6 +3,12 @@ import "./header.css";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../contexts/userProvider";
 import Logout from "../user/logout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSignIn,
+  faUser,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const { user } = useContext(UserContext);
@@ -33,7 +39,7 @@ const Header = () => {
                 to="/user/profile"
                 className="nav-link"
               >
-                Profile
+                <FontAwesomeIcon icon={faUser} /> Profile
               </Link>
               <Logout />
             </>
@@ -43,13 +49,13 @@ const Header = () => {
                 to="/register"
                 className="nav-link"
               >
-                Sign up
+                <FontAwesomeIcon icon={faUserPlus} /> Register
               </Link>
               <Link
                 to="/login"
                 className="nav-link"
               >
-                Sign in
+                <FontAwesomeIcon icon={faSignIn} /> Login
               </Link>
             </>
           )}
@@ -75,7 +81,7 @@ const Header = () => {
                 className="nav-link mobile-menu"
                 tabIndex="-1" /* Prevents the link from being focusable */
               >
-                Profile
+                <FontAwesomeIcon icon={faUser} /> Profile
               </Link>
               <Logout />
             </>
@@ -87,7 +93,7 @@ const Header = () => {
                 className="nav-link mobile-menu"
                 tabIndex="-1"
               >
-                Sign up
+                <FontAwesomeIcon icon={faUserPlus} /> Register
               </Link>
               <Link
                 to="/login"
@@ -95,7 +101,7 @@ const Header = () => {
                 className="nav-link mobile-menu"
                 tabIndex="-1"
               >
-                Sign in
+                <FontAwesomeIcon icon={faSignIn} /> Login
               </Link>
             </>
           )}

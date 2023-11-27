@@ -361,6 +361,7 @@ const resetPassword = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
+  const userId = req.user.user_id;
   try {
     // Assuming you store the token in the request (e.g., in a cookie)
     const token = req.cookies.accessToken;
@@ -372,6 +373,8 @@ const logoutUser = async (req, res) => {
     // Clear the token from the response (e.g., clearing cookies)
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
+
+    await pool.query("DELETE FROM refresh_tokens WHERE user_id = $1", [userId]);
 
     res.json({ message: "Logged out successfully" });
   } catch (error) {

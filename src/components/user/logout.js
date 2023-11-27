@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { UserContext } from "../../contexts/userProvider";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Logout = () => {
   const { setUser } = useContext(UserContext);
@@ -10,17 +12,14 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      // Invalidate the session on the server
       await axios.post(
         `${BASE_API_URL}/api/user/logout`,
         {},
         { withCredentials: true }
       );
 
-      // Clear user context and any stored tokens
       setUser(null);
 
-      // Redirect to login or home page
       navigate("/login");
     } catch (error) {
       console.error("Logout failed", error);
@@ -32,7 +31,8 @@ const Logout = () => {
       onClick={handleLogout}
       className="nav-link"
     >
-      Logout
+      Logout&nbsp;&nbsp;
+      <FontAwesomeIcon icon={faSignOutAlt} />
     </Link>
   );
 };
