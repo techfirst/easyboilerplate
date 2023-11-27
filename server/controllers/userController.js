@@ -217,14 +217,14 @@ const refreshToken = async (req, res) => {
 
     // Create a new access token
     const newAccessToken = jwt.sign(
-      { userId: userId },
+      { user_id: userId },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "15m" }
     );
 
     // Generate a new refresh token
     const newRefreshToken = jwt.sign(
-      { userId: userId },
+      { user_id: userId },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "7d" }
     );

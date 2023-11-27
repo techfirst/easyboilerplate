@@ -48,7 +48,6 @@ const webhook = async (req, res) => {
       case "invoice.paid":
       case "invoice.payment_succeeded":
         dataObject = event.data.object;
-        console.log(dataObject);
         customer = await stripe.customers.retrieve(dataObject.customer);
         email = customer.email;
         priceId = dataObject.lines.data[0]?.price?.id;
@@ -70,7 +69,21 @@ const webhook = async (req, res) => {
         break;
 
       case "invoice.payment_failed":
-        // Similar handling as above, with appropriate status
+        dataObject = event.data.object;
+        customer = await stripe.customers.retrieve(dataObject.customer);
+        email = customer.email;
+        subscriptionId = dataObject.id;
+        // Set end date to current date as the subscription is not payed
+        endDate = new Date().toISOString().slice(0, 10);
+
+        await handleSubscriptionUpdate(
+          email,
+          subscriptionId,
+          "payment_failed",
+          null,
+          endDate
+        );
+        console.log(`${event.type}: ${dataObject.status}`);
         break;
 
       case "customer.subscription.created":
