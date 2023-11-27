@@ -5,6 +5,7 @@ import { UserContext } from "../../contexts/userProvider";
 import Logout from "../user/logout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faHome,
   faSignIn,
   faUser,
   faUserPlus,
@@ -35,6 +36,12 @@ const Header = () => {
         <nav className="header-nav">
           {user ? (
             <>
+              <Link
+                to="/"
+                className="nav-link"
+              >
+                <FontAwesomeIcon icon={faHome} /> Start
+              </Link>
               <Link
                 to="/user/profile"
                 className="nav-link"
@@ -76,6 +83,14 @@ const Header = () => {
           {user ? (
             <>
               <Link
+                to="/"
+                onClick={toggleMenu}
+                className="nav-link mobile-menu"
+                tabIndex="-1"
+              >
+                <FontAwesomeIcon icon={faHome} /> Start
+              </Link>
+              <Link
                 to="/user/profile"
                 onClick={toggleMenu}
                 className="nav-link mobile-menu"
@@ -87,6 +102,14 @@ const Header = () => {
             </>
           ) : (
             <>
+              <Link
+                to="/"
+                onClick={toggleMenu}
+                className="nav-link mobile-menu"
+                tabIndex="-1"
+              >
+                <FontAwesomeIcon icon={faHome} /> Start
+              </Link>
               <Link
                 to="/register"
                 onClick={toggleMenu}

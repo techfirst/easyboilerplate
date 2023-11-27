@@ -99,14 +99,15 @@ a:visited {
 .overlay.open {
   width: 100%;
 }
-
+  
 .overlay-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding-top: 60px;
   min-width: 200px; /* Adjust as needed */
   white-space: nowrap; /* Prevent wrapping */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .overlay-content a,
