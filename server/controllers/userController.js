@@ -215,13 +215,13 @@ const refreshToken = async (req, res) => {
 
     // Get the user ID associated with the refresh token
     const userId = refreshTokenRecord.user_id;
-    const user = getUserById(userId);
+    const user = await getUserById(userId);
 
     // Create a new access token
     const newAccessToken = jwt.sign(
       { user_id: user.id, email: user.email },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: "1m" }
     );
 
     // Generate a new refresh token
