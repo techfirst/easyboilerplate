@@ -3,7 +3,6 @@ const userController = require("../controllers/userController");
 
 async function authMiddleware(req, res, next) {
   const token = req.cookies.accessToken;
-
   if (!token) {
     try {
       const refreshTokenResponse = await userController.refreshToken(req, res);
@@ -27,7 +26,9 @@ async function authMiddleware(req, res, next) {
       req.user = decodedToken;
       next();
     } catch (error) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized " + error });
     }
   }
 }

@@ -16,16 +16,32 @@
   color: #74aa9c;
 }
 
+.header-brand a {
+  color: #74aa9c;
+}
+
+.header-brand a:visited {
+  color: #74aa9c;
+}
+
 .nav-link {
   padding: 0.5rem 1rem;
   text-decoration: none;
-  color: #74aa9c;
-  font-size: 1rem;
+  font-size: 16px;
   transition: color 0.3s ease;
+  font-weight: 700;
 }
 
 .nav-link:hover {
   color: #5e9380;
+}
+
+a {
+  color: #000;
+}
+
+a:visited {
+  color: #000;
 }
 
 .menu-icon {

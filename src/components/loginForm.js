@@ -26,10 +26,9 @@ const LoginForm = () => {
       const response = await axios.post(`${apiUrl}/api/login`, data, {
         withCredentials: true,
       });
-      console.log(response.data);
       if (response.data.success) {
         setUser(response.data.user);
-        navigate("/user/profile"); // Adjust according to your routing
+        navigate("/user/profile");
       } else {
         setLoginError("Login failed. Please try again."); // Setting custom error message
       }
