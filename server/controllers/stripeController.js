@@ -25,6 +25,15 @@ async function handleSubscriptionUpdate(
       WHERE email = $5`,
       [priceId, status, startDate, endDate, email]
     );
+
+    console.log(
+      "Updated user subscription for user " +
+        email +
+        " with status " +
+        status +
+        " for price id " +
+        priceId
+    );
   } catch (err) {
     console.error("Database Error:", err);
   }
@@ -48,6 +57,7 @@ const webhook = async (req, res) => {
       case "invoice.paid":
       case "invoice.payment_succeeded":
         dataObject = event.data.object;
+        // console.log(dataObject.lines.data);
         customer = await stripe.customers.retrieve(dataObject.customer);
         email = customer.email;
         priceId = dataObject.lines.data[0]?.price?.id;
@@ -89,7 +99,7 @@ const webhook = async (req, res) => {
       case "customer.subscription.created":
       case "customer.subscription.updated":
         dataObject = event.data.object;
-        console.log(dataObject);
+        // console.log(dataObject);
         customer = await stripe.customers.retrieve(dataObject.customer);
         email = customer.email;
         // Extract priceId from the appropriate path in the subscription object

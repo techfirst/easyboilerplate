@@ -96,7 +96,6 @@ const UserProfile = () => {
           >
             Save
           </button>
-          <hr />
           <Logout />
         </form>
       )}

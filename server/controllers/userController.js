@@ -4,6 +4,7 @@ const pool = require("../db");
 const { validationResult } = require("express-validator");
 const { ServerClient } = require("postmark");
 const crypto = require("crypto");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -86,14 +87,14 @@ const loginUser = async (req, res) => {
 
     // Generate JWT (access token)
     const accessToken = jwt.sign(
-      { user_id: user.id },
+      { user_id: user.id, email: user.email },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "15m" }
     );
 
     // Generate Refresh Token
     const refreshToken = jwt.sign(
-      { user_id: user.id },
+      { user_id: user.id, email: user.email },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "7d" }
     );
@@ -214,17 +215,18 @@ const refreshToken = async (req, res) => {
 
     // Get the user ID associated with the refresh token
     const userId = refreshTokenRecord.user_id;
+    const user = getUserById(userId);
 
     // Create a new access token
     const newAccessToken = jwt.sign(
-      { user_id: userId },
+      { user_id: user.id, email: user.email },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "15m" }
     );
 
     // Generate a new refresh token
     const newRefreshToken = jwt.sign(
-      { user_id: userId },
+      { user_id: user.id, email: user.email },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "7d" }
     );
@@ -286,6 +288,23 @@ const getUser = async (req, res) => {
   } catch (error) {
     console.error("Error fetching user data:", error);
     res.status(500).send("Internal Server Error.");
+  }
+};
+
+const getUserById = async (userId) => {
+  try {
+    const result = await pool.query(
+      `
+        SELECT firstname, lastname, email, company_name, is_verified
+        FROM users
+        WHERE id = $1
+      `,
+      [userId]
+    );
+
+    return result.rows[0];
+  } catch (error) {
+    console.error("Error fetching user data:", error);
   }
 };
 
@@ -431,6 +450,35 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const checkSubscription = async (req, res) => {
+  var email = req.user.email;
+
+  try {
+    const customers = await stripe.customers.list({
+      email: email,
+    });
+
+    for (const customer of customers.data) {
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customer.id,
+        status: "active",
+      });
+
+      res
+        .status(200)
+        .json({ hasActiveSubscription: subscriptions.data.length > 0 });
+      return;
+    }
+
+    res.status(200).json({ hasActiveSubscription: false });
+  } catch (error) {
+    console.error("Error checking if user have active subscription:", error);
+    res
+      .status(500)
+      .json({ message: "Error checking if user have active subscription" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -441,4 +489,5 @@ module.exports = {
   resetPassword,
   logoutUser,
   updateUserProfile,
+  checkSubscription,
 };

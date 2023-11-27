@@ -4,7 +4,21 @@ body, html {
   height: 100%;
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f7f7f7;
+  background: #3c3c50;
+  padding-top: 20px;
+  color: #fff;
+}
+
+a {
+  color: #74aa9c;
+}
+
+a:hover {
+  color: #5e9380;
+}
+
+a:visited {
+  color: #74aa9c;
 }
 
 .form-container {
@@ -18,7 +32,7 @@ body, html {
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background: #fff;
+  background: rgba(255,255,255,0.1);
   width: 400px;
   max-width: 90%;
 }
@@ -30,11 +44,26 @@ body, html {
 
 .form-input {
   width: 100%;
-  padding: 10px;
+  padding: 15px 20px; /* Adjust padding to match your design */
   margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+  border-radius: 5px; /* Rounded corners */
+  border: none; /* Remove border */
+  outline: none; /* Remove outline */
   box-sizing: border-box; /* Include padding in input width */
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1); /* Inner shadow for depth */
+  font-size: 16px; /* Adjust font size as needed */
+  color: #333; /* Text color */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions for interactions */
+}
+
+.form-input::placeholder {
+  color: #aaa; /* Placeholder text color */
+}
+
+.form-input:focus {
+  background-color: rgba(255, 255, 255, 0.95); /* Slightly less transparent on focus */
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2); /* Darker inner shadow on focus */
 }
 
 .error-message {
@@ -43,14 +72,21 @@ body, html {
 
 .form-button {
   width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
+  padding: 15px 20px; /* Consistent padding for visual harmony */
+  margin-top: 20px; /* Space above the button */
+  border-radius: 5px; /* Slightly rounded corners to match the input fields */
+  border: none; /* No border for a clean, flat design */
+  background-color: #74aa9c; /* Original soft teal background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Cursor to indicate button */
+  outline: none; /* Remove outline */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s; /* Smooth transitions for button interactions */
+  font-size: 16px; /* Matching font size with the input fields */
+  font-weight: bold; /* Bold font for the button text */
 }
 
 .form-button:hover {
-  background-color: #0056b3;
+  background-color: #5e9380; /* Slightly darker shade on hover for interactive feedback */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* More pronounced shadow on hover */
 }
