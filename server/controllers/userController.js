@@ -404,6 +404,32 @@ async function invalidateToken(token) {
     throw new Error("Failed to invalidate token.");
   }
 }
+const updateUserProfile = async (req, res) => {
+  // Extract user ID from the request object
+  const userId = req.user.user_id;
+
+  // Extract user details from the request body
+  const { firstname, lastname, companyName } = req.body;
+
+  try {
+    // Validate the input (you can add more validation as needed)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Update the user's information in the database
+    await pool.query(
+      "UPDATE users SET firstname = $1, lastname = $2, company_name = $3 WHERE id = $4",
+      [firstname, lastname, companyName, userId]
+    );
+
+    res.status(200).json({ message: "User profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ message: "Error updating user profile" });
+  }
+};
 
 module.exports = {
   registerUser,
@@ -414,4 +440,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   logoutUser,
+  updateUserProfile,
 };

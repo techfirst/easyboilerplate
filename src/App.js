@@ -9,6 +9,7 @@ import VerifyUser from "./components/user/verifyUser";
 import ForgotPassword from "./components/forgotPassword";
 import ResetPassword from "./components/resetPassword";
 import "./App.css";
+import Subscription from "./components/user/subscription";
 
 const App = () => {
   return (
@@ -43,6 +44,15 @@ const App = () => {
               <Route
                 index
                 element={<UserProfile />}
+              />
+            </Route>
+            <Route
+              path="/user/subscription"
+              element={<ProtectedRoute />}
+            >
+              <Route
+                index
+                element={<Subscription />}
               />
             </Route>
           </Routes>

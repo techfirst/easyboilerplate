@@ -34,6 +34,11 @@ const validateRegistration = [
     .withMessage("Password must be at least 8 characters long"),
 ];
 
+const validateUpdateProfile = [
+  check("firstname").notEmpty().withMessage("Firstname is required"),
+  check("lastname").notEmpty().withMessage("Lastname is required"),
+];
+
 const validateLogin = [
   body("email").isEmail().withMessage("Invalid e-mail format"),
   body("password")
@@ -53,4 +58,5 @@ module.exports = {
   validateResetPassword,
   validateRegistration,
   validateLogin,
+  validateUpdateProfile,
 };
