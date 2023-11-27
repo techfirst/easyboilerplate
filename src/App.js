@@ -10,13 +10,21 @@ import ForgotPassword from "./components/forgotPassword";
 import ResetPassword from "./components/resetPassword";
 import "./App.css";
 import Subscription from "./components/user/subscription";
+import Header from "./components/layout/header";
+import Footer from "./components/layout/footer";
+import StartPage from "./components/startpage";
 
 const App = () => {
   return (
     <UserProvider>
       <Router>
-        <div>
+        <Header /> {/* Header is always displayed */}
+        <main>
           <Routes>
+            <Route
+              path="/"
+              element={<StartPage />}
+            />
             <Route
               path="/register"
               element={<Register />}
@@ -56,7 +64,8 @@ const App = () => {
               />
             </Route>
           </Routes>
-        </div>
+        </main>
+        <Footer />
       </Router>
     </UserProvider>
   );

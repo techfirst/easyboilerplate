@@ -42,22 +42,24 @@ const VerifyUser = () => {
   }, [token]);
 
   return (
-    <div className="form-container">
-      <div className="form-box">
-        {verificationStatus.loading && <p>Verifying...</p>}
-        {verificationStatus.success && (
-          <>
+    <div className="container">
+      <div className="form-container">
+        <div className="form-box">
+          {verificationStatus.loading && <p>Verifying...</p>}
+          {verificationStatus.success && (
+            <>
+              <p>
+                Your account has been successfully verified. You can now log in.
+              </p>
+              <LoginForm />
+            </>
+          )}
+          {verificationStatus.error && (
             <p>
-              Your account has been successfully verified. You can now log in.
+              Verification failed. Please try again or contact support for help.
             </p>
-            <LoginForm />
-          </>
-        )}
-        {verificationStatus.error && (
-          <p>
-            Verification failed. Please try again or contact support for help.
-          </p>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -5,12 +5,16 @@ body, html {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #3c3c50;
-  padding-top: 20px;
   color: #fff;
+}
+
+.container {
+    padding: 50px 20px;
 }
 
 a {
   color: #74aa9c;
+  text-decoration: none;
 }
 
 a:hover {

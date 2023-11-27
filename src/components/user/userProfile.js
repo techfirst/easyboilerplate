@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import Logout from "./logout";
 import axios from "axios";
 import "../../App.css";
 
@@ -53,52 +52,53 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="form-container">
-      {updateSuccess ? (
-        <div className="form-box">
-          <p>{responseMessage}</p>
-        </div>
-      ) : (
-        <form
-          className="form-box"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <input
-            className="form-input"
-            type="text"
-            placeholder="First Name"
-            {...register("firstname", { required: "First name is required" })}
-          />
-          {errors.firstname && (
-            <p className="error-message">{errors.firstname.message}</p>
-          )}
-
-          <input
-            className="form-input"
-            type="text"
-            placeholder="Last Name"
-            {...register("lastname", { required: "Last name is required" })}
-          />
-          {errors.lastname && (
-            <p className="error-message">{errors.lastname.message}</p>
-          )}
-
-          <input
-            className="form-input"
-            type="text"
-            placeholder="Company Name"
-            {...register("companyName")}
-          />
-
-          <button
-            type="submit"
-            className="form-button"
+    <div className="container">
+      <div className="form-container">
+        {updateSuccess ? (
+          <div className="form-box">
+            <p>{responseMessage}</p>
+          </div>
+        ) : (
+          <form
+            className="form-box"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            Save
-          </button>
-          <Logout />
-        </form>
-      )}
+            <input
+              className="form-input"
+              type="text"
+              placeholder="First Name"
+              {...register("firstname", { required: "First name is required" })}
+            />
+            {errors.firstname && (
+              <p className="error-message">{errors.firstname.message}</p>
+            )}
+
+            <input
+              className="form-input"
+              type="text"
+              placeholder="Last Name"
+              {...register("lastname", { required: "Last name is required" })}
+            />
+            {errors.lastname && (
+              <p className="error-message">{errors.lastname.message}</p>
+            )}
+
+            <input
+              className="form-input"
+              type="text"
+              placeholder="Company Name"
+              {...register("companyName")}
+            />
+
+            <button
+              type="submit"
+              className="form-button"
+            >
+              Save
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

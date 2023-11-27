@@ -41,52 +41,65 @@ const LoginForm = () => {
     setLoading(false);
   };
 
+  const gotoForgotPassword = () => {
+    navigate("/forgot-password");
+  };
+
   return (
-    <div className="form-container">
-      <form
-        className="form-box"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="form-input-group">
-          <input
-            type="email"
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: "Invalid email format",
-              },
-            })}
-            className="form-input"
-            placeholder="Email *"
-          />
-          {errors.email && (
-            <div className="error-message">{errors.email.message}</div>
-          )}
-        </div>
-
-        <div className="form-input-group">
-          <input
-            type="password"
-            {...register("password", { required: "Password is required" })}
-            className="form-input"
-            placeholder="Password *"
-          />
-          {errors.password && (
-            <div className="error-message">{errors.password.message}</div>
-          )}
-        </div>
-
-        {loginError && <div className="error-message">{loginError}</div>}
-
-        <button
-          className="form-button"
-          type="submit"
-          disabled={loading}
+    <div className="container">
+      <div className="form-container">
+        <form
+          className="form-box"
+          onSubmit={handleSubmit(onSubmit)}
         >
-          {loading ? "Logging in..." : "Log In"}
-        </button>
-      </form>
+          <div className="form-input-group">
+            <input
+              type="email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "Invalid email format",
+                },
+              })}
+              className="form-input"
+              placeholder="Email *"
+            />
+            {errors.email && (
+              <div className="error-message">{errors.email.message}</div>
+            )}
+          </div>
+
+          <div className="form-input-group">
+            <input
+              type="password"
+              {...register("password", { required: "Password is required" })}
+              className="form-input"
+              placeholder="Password *"
+            />
+            {errors.password && (
+              <div className="error-message">{errors.password.message}</div>
+            )}
+          </div>
+
+          {loginError && <div className="error-message">{loginError}</div>}
+
+          <button
+            className="form-button"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Log In"}
+          </button>
+          <button
+            onClick={gotoForgotPassword}
+            type="button"
+            className="form-button"
+          >
+            Forgot password?
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

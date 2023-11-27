@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { UserContext } from "../../contexts/userProvider";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Logout = () => {
   const { setUser } = useContext(UserContext);
@@ -28,12 +28,12 @@ const Logout = () => {
   };
 
   return (
-    <button
-      className="form-button"
+    <Link
       onClick={handleLogout}
+      className="nav-link"
     >
       Logout
-    </button>
+    </Link>
   );
 };
 

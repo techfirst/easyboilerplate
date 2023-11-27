@@ -28,36 +28,38 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="form-container">
-      <form
-        className="form-box"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="form-input-group">
-          <input
-            type="email"
-            {...register("email", {
-              required: "E-mail is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: "Invalid email format",
-              },
-            })}
-            className="form-input"
-            placeholder="Enter your e-mail"
-          />
-          {errors.email && (
-            <div className="error-message">{errors.email.message}</div>
-          )}
-        </div>
-        <button
-          className="form-button"
-          type="submit"
+    <div className="container">
+      <div className="form-container">
+        <form
+          className="form-box"
+          onSubmit={handleSubmit(onSubmit)}
         >
-          Reset Password
-        </button>
-        {message && <div className="message">{message}</div>}
-      </form>
+          <div className="form-input-group">
+            <input
+              type="email"
+              {...register("email", {
+                required: "E-mail is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "Invalid email format",
+                },
+              })}
+              className="form-input"
+              placeholder="Enter your e-mail"
+            />
+            {errors.email && (
+              <div className="error-message">{errors.email.message}</div>
+            )}
+          </div>
+          <button
+            className="form-button"
+            type="submit"
+          >
+            Reset Password
+          </button>
+          {message && <div className="message">{message}</div>}
+        </form>
+      </div>
     </div>
   );
 }

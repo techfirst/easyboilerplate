@@ -37,58 +37,60 @@ function ResetPassword() {
   };
 
   return (
-    <div className="form-container">
-      {!isResetSuccessful ? (
-        <form
-          className="form-box"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="form-input-group">
-            <input
-              type="password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters long",
-                },
-              })}
-              className="form-input"
-              placeholder="New Password"
-            />
-            {errors.password && (
-              <div className="error-message">{errors.password.message}</div>
-            )}
-          </div>
-          <div className="form-input-group">
-            <input
-              type="password"
-              {...register("confirmPassword", {
-                required: "Confirm Password is required",
-              })}
-              className="form-input"
-              placeholder="Confirm New Password"
-            />
-            {errors.confirmPassword && (
-              <div className="error-message">
-                {errors.confirmPassword.message}
-              </div>
-            )}
-          </div>
-          <button
-            className="form-button"
-            type="submit"
+    <div className="container">
+      <div className="form-container">
+        {!isResetSuccessful ? (
+          <form
+            className="form-box"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            Reset Password
-          </button>
-          {message && <div className="message">{message}</div>}
-        </form>
-      ) : (
-        <div>
-          <div className="success-message">{message}</div>
-          <Link to="/login">Go to Login Page</Link>
-        </div>
-      )}
+            <div className="form-input-group">
+              <input
+                type="password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters long",
+                  },
+                })}
+                className="form-input"
+                placeholder="New Password"
+              />
+              {errors.password && (
+                <div className="error-message">{errors.password.message}</div>
+              )}
+            </div>
+            <div className="form-input-group">
+              <input
+                type="password"
+                {...register("confirmPassword", {
+                  required: "Confirm Password is required",
+                })}
+                className="form-input"
+                placeholder="Confirm New Password"
+              />
+              {errors.confirmPassword && (
+                <div className="error-message">
+                  {errors.confirmPassword.message}
+                </div>
+              )}
+            </div>
+            <button
+              className="form-button"
+              type="submit"
+            >
+              Reset Password
+            </button>
+            {message && <div className="message">{message}</div>}
+          </form>
+        ) : (
+          <div>
+            <div className="success-message">{message}</div>
+            <Link to="/login">Go to Login Page</Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
