@@ -8,34 +8,33 @@ export const UserProvider = ({ children }) => {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    getUser();
+    refreshUserToken();
   }, []);
 
-  async function getUser() {
+  async function refreshUserToken() {
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
-      const response = await axios.get(`${apiUrl}/api/user/getuser`, {
-        withCredentials: true,
-      });
-      const result = response.data;
-      if (result.success) {
-        setUser(result.user);
+      const response = await axios.post(
+        `${apiUrl}/api/user/refresh-token`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        setUser(response.data.user);
       }
     } catch (error) {
-      console.error("Authentication check error:", error);
+      console.error("UserProvider: Error refreshing token:", error);
     } finally {
       setIsChecking(false);
     }
   }
 
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        isChecking,
-        setUser,
-      }}
-    >
+    <UserContext.Provider value={{ user, isChecking, setUser }}>
       {children}
     </UserContext.Provider>
   );

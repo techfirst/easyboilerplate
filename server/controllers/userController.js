@@ -186,6 +186,57 @@ const verifyUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    console.log("No refresh token provided");
+    return res
+      .status(400)
+      .json({ success: false, message: "Refresh token required" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM refresh_tokens WHERE token = $1",
+      [refreshToken]
+    );
+
+    const tokenData = result.rows[0];
+
+    if (!tokenData) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid refresh token" });
+    }
+
+    // Get the user ID associated with the refresh token
+    const userId = tokenData.user_id;
+    const user = await getUserById(userId);
+
+    // Create a new access token
+    const newAccessToken = jwt.sign(
+      { user_id: userId, email: user.email },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "15m" }
+    );
+
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 900000,
+    });
+
+    res.json({ success: true, user: { userId: user.id, email: user.email } });
+  } catch (error) {
+    console.error("Refresh token error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error." });
+  }
+};
+
+const refreshTokenFromMiddleware = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
   if (!refreshToken) {
     return res
       .status(400)
@@ -222,7 +273,8 @@ const refreshToken = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 900000,
     });
-    return { success: true, user_id: userId };
+
+    return { success: true, userId: userId, email: user.email };
   } catch (error) {
     console.error("Refresh token error:", error);
     return res
@@ -461,4 +513,5 @@ module.exports = {
   logoutUser,
   updateUserProfile,
   checkSubscription,
+  refreshTokenFromMiddleware,
 };

@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { UserProvider } from "./contexts/userProvider";
 import Register from "./components/register";
 import Login from "./components/loginForm";
 import ProtectedRoute from "./utils/protectedRoute";
@@ -16,58 +15,56 @@ import StartPage from "./components/startpage";
 
 const App = () => {
   return (
-    <UserProvider>
-      <Router>
-        <Header /> {/* Header is always displayed */}
-        <main>
-          <Routes>
+    <Router>
+      <Header /> {/* Header is always displayed */}
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={<StartPage />}
+          />
+          <Route
+            path="/register"
+            element={<Register />}
+          />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPassword />}
+          />
+          <Route
+            path="/verify-user/:token"
+            element={<VerifyUser />}
+          />
+          <Route
+            path="/user/profile"
+            element={<ProtectedRoute />}
+          >
             <Route
-              path="/"
-              element={<StartPage />}
+              index
+              element={<UserProfile />}
             />
+          </Route>
+          <Route
+            path="/user/subscription"
+            element={<ProtectedRoute />}
+          >
             <Route
-              path="/register"
-              element={<Register />}
+              index
+              element={<Subscription />}
             />
-            <Route
-              path="/login"
-              element={<Login />}
-            />
-            <Route
-              path="/forgot-password"
-              element={<ForgotPassword />}
-            />
-            <Route
-              path="/reset-password/:token"
-              element={<ResetPassword />}
-            />
-            <Route
-              path="/verify-user/:token"
-              element={<VerifyUser />}
-            />
-            <Route
-              path="/user/profile"
-              element={<ProtectedRoute />}
-            >
-              <Route
-                index
-                element={<UserProfile />}
-              />
-            </Route>
-            <Route
-              path="/user/subscription"
-              element={<ProtectedRoute />}
-            >
-              <Route
-                index
-                element={<Subscription />}
-              />
-            </Route>
-          </Routes>
-        </main>
-        <Footer />
-      </Router>
-    </UserProvider>
+          </Route>
+        </Routes>
+      </main>
+      <Footer />
+    </Router>
   );
 };
 
