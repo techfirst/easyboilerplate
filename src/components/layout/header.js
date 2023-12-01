@@ -1,136 +1,121 @@
-import React, { useContext, useState } from "react";
-import "./header.css";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
 import { UserContext } from "../../contexts/userProvider";
-import Logout from "../user/logout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  faHome,
-  faSignIn,
-  faUser,
-  faUserPlus,
-} from "@fortawesome/free-solid-svg-icons";
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  HStack,
+  Image,
+  useBreakpointValue,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { MobileDrawer } from "./MobileNavBar";
+import { ToggleButton } from "./ToggleButton";
+import Logo from "../../assets/images/easysetup.png";
+import { useNavbar } from "./useNavbar";
+import axios from "axios";
 
-const Header = () => {
+export const Header = () => {
+  const { setUser } = useContext(UserContext);
+  const { rootProps } = useNavbar();
   const { user } = useContext(UserContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isTransitionComplete, setIsTransitionComplete] = useState(false);
+  const isDesktop = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+  const mobileNavbar = useDisclosure();
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (!isMenuOpen) {
-      setTimeout(() => {
-        setIsTransitionComplete(true);
-      }, 500); // Adjust the timeout to match your transition duration
-    } else {
-      setIsTransitionComplete(false);
+  const goto = (route) => {
+    navigate(route);
+  };
+
+  const logout = async () => {
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/user/logout`,
+        {},
+        { withCredentials: true }
+      );
+
+      setUser(null);
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
     }
   };
 
   return (
-    <>
-      <header className="header">
-        <div className="header-brand">
-          <Link to="/">EasySetup</Link>
-        </div>
-        <nav className="header-nav">
-          {user ? (
-            <>
-              <Link
-                to="/"
-                className="nav-link"
+    <Box
+      as="nav"
+      role="navigation"
+      position="sticky"
+      top="0"
+      zIndex="docked"
+      bg="bg.surface"
+      {...rootProps}
+    >
+      <Container py="4">
+        <HStack justify="space-between">
+          <Link to={"/"}>
+            <Image
+              src={Logo}
+              alt="EasySetup"
+              style={{ maxHeight: "40px" }}
+            />
+          </Link>
+          {isDesktop ? (
+            <HStack spacing="8">
+              <ButtonGroup
+                size="lg"
+                variant="text"
+                spacing="8"
               >
-                <FontAwesomeIcon icon={faHome} /> Start
-              </Link>
-              <Link
-                to="/user/profile"
-                className="nav-link"
-              >
-                <FontAwesomeIcon icon={faUser} /> Profile
-              </Link>
-              <Logout />
-            </>
+                <Button onClick={() => goto("/")}>Start</Button>
+                {user ? (
+                  <>
+                    <Button onClick={() => goto("/user/subscription")}>
+                      Subscription
+                    </Button>
+                    <Button onClick={() => goto("/user/profile")}>
+                      Profile
+                    </Button>
+                    <Button onClick={logout}>Logout</Button>
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => goto("/login")}>Login</Button>
+                  </>
+                )}
+              </ButtonGroup>
+              {!user && (
+                <Button
+                  size={{ base: "lg", md: "xl" }}
+                  onClick={() => goto("/register")}
+                >
+                  Register
+                </Button>
+              )}
+            </HStack>
           ) : (
             <>
-              <Link
-                to="/register"
-                className="nav-link"
-              >
-                <FontAwesomeIcon icon={faUserPlus} /> Register
-              </Link>
-              <Link
-                to="/login"
-                className="nav-link"
-              >
-                <FontAwesomeIcon icon={faSignIn} /> Login
-              </Link>
+              <ToggleButton
+                onClick={mobileNavbar.onToggle}
+                isOpen={mobileNavbar.isOpen}
+                aria-label="Open Menu"
+              />
+              <MobileDrawer
+                isOpen={mobileNavbar.isOpen}
+                onClose={mobileNavbar.onClose}
+              />
             </>
           )}
-        </nav>
-        <div
-          className={`menu-icon ${isMenuOpen ? "open" : ""}`}
-          onClick={toggleMenu}
-        >
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-      </header>
-      <div className={`overlay ${isMenuOpen ? "open" : ""}`}>
-        <div
-          className={`overlay-content ${isTransitionComplete ? "visible" : ""}`}
-        >
-          {user ? (
-            <>
-              <Link
-                to="/"
-                onClick={toggleMenu}
-                className="nav-link mobile-menu"
-                tabIndex="-1"
-              >
-                <FontAwesomeIcon icon={faHome} /> Start
-              </Link>
-              <Link
-                to="/user/profile"
-                onClick={toggleMenu}
-                className="nav-link mobile-menu"
-                tabIndex="-1" /* Prevents the link from being focusable */
-              >
-                <FontAwesomeIcon icon={faUser} /> Profile
-              </Link>
-              <Logout />
-            </>
-          ) : (
-            <>
-              <Link
-                to="/"
-                onClick={toggleMenu}
-                className="nav-link mobile-menu"
-                tabIndex="-1"
-              >
-                <FontAwesomeIcon icon={faHome} /> Start
-              </Link>
-              <Link
-                to="/register"
-                onClick={toggleMenu}
-                className="nav-link mobile-menu"
-                tabIndex="-1"
-              >
-                <FontAwesomeIcon icon={faUserPlus} /> Register
-              </Link>
-              <Link
-                to="/login"
-                onClick={toggleMenu}
-                className="nav-link mobile-menu"
-                tabIndex="-1"
-              >
-                <FontAwesomeIcon icon={faSignIn} /> Login
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-    </>
+        </HStack>
+      </Container>
+    </Box>
   );
 };
 

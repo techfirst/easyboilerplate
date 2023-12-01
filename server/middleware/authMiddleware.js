@@ -3,7 +3,6 @@ const userController = require("../controllers/userController");
 
 async function authMiddleware(req, res, next) {
   const token = req.cookies.accessToken;
-  const refreshToken = req.cookies.refreshToken;
 
   if (!token) {
     try {

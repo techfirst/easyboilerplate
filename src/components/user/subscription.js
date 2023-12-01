@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../contexts/userProvider";
 import { Link } from "react-router-dom";
-import "../../App.css";
 import StripePriceTable from "../stripepricetable";
 
 const Subscription = () => {

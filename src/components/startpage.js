@@ -1,20 +1,104 @@
-import React from "react";
-import "./startpage.css";
-import StripePriceTable from "./stripepricetable";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/userProvider";
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Img,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { Features } from "./features";
+// import StripePriceTable from "./stripepricetable";
 
 const StartPage = () => {
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleGetStartedClick = () => {
+    navigate("/register");
+  };
+
   return (
-    <div className="start-page">
-      <h1>Welcome to your new project</h1>
-      <p>
-        Let's get started - The magic you are looking for is in the work you are
-        avoiding
-      </p>
-      {/* <button className="form-button btn-start">Register now</button> */}
-      <div className="startpage-price-table">
-        <StripePriceTable />
-      </div>
-    </div>
+    <>
+      <Box
+        position="relative"
+        height={{ lg: "720px" }}
+      >
+        <Container
+          py={{ base: "16", md: "24" }}
+          height="full"
+        >
+          <Stack
+            direction={{ base: "column", lg: "row" }}
+            spacing={{ base: "16" }}
+            align={{ lg: "center" }}
+            height="full"
+          >
+            <Stack spacing={{ base: "8", md: "12" }}>
+              <Stack spacing="4">
+                <Stack
+                  spacing={{ base: "4", md: "6" }}
+                  maxW={{ md: "xl", lg: "md", xl: "xl" }}
+                >
+                  <Heading size={{ base: "md", md: "lg" }}>
+                    Welcome to your new project
+                  </Heading>
+                  <Text
+                    fontSize={{ base: "lg", md: "xl" }}
+                    color="fg.muted"
+                  >
+                    Let's get started - The magic you are looking for is in the
+                    work you are avoiding
+                  </Text>
+                </Stack>
+              </Stack>
+              <Stack
+                direction={{ base: "column", md: "row" }}
+                spacing="3"
+              >
+                {!user && (
+                  <Button
+                    size={{ base: "lg", md: "xl" }}
+                    onClick={handleGetStartedClick}
+                  >
+                    Get started
+                  </Button>
+                )}
+
+                {/* <Button
+                  variant="secondary"
+                  size={{ base: "lg", md: "xl" }}
+                >
+                  Learn more
+                </Button> */}
+              </Stack>
+            </Stack>
+            <Box
+              pos={{ lg: "absolute" }}
+              right="0"
+              bottom="0"
+              w={{ base: "full", lg: "50%" }}
+              height={{ base: "96", lg: "full" }}
+              sx={{
+                clipPath: { lg: "polygon(7% 0%, 100% 0%, 100% 100%, 0% 100%)" },
+              }}
+            >
+              <Img
+                boxSize="full"
+                objectFit="cover"
+                src="https://images.squarespace-cdn.com/content/v1/6213c340453c3f502425776e/02999b9b-8f7f-4da9-a2af-b6ed5dbf55b2/sdxl_clipdrop-background-removal_clipdrop-enhance+1.png?format=2500w"
+                alt="EasySetup"
+              />
+            </Box>
+          </Stack>
+        </Container>
+      </Box>
+      <Features />
+      {/* <StripePriceTable /> */}
+    </>
   );
 };
 

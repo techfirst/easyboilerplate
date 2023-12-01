@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import LoginForm from "../loginForm";
-import "../../App.css";
+import { Box, Button, Container, Heading, Stack, Text } from "@chakra-ui/react";
 
 const VerifyUser = () => {
   const { token } = useParams();
@@ -11,6 +10,7 @@ const VerifyUser = () => {
     success: false,
     error: false,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -41,27 +41,63 @@ const VerifyUser = () => {
     }
   }, [token]);
 
+  const goto = (route) => {
+    navigate(route);
+  };
+
   return (
-    <div className="container">
-      <div className="form-container">
-        <div className="form-box">
-          {verificationStatus.loading && <p>Verifying...</p>}
+    <Box as="section">
+      <Container py={{ base: "16", md: "24" }}>
+        <Stack spacing={{ base: "8", md: "10" }}>
+          <Stack
+            spacing={{ base: "4", md: "5" }}
+            align="center"
+          >
+            {verificationStatus.loading && (
+              <Heading size={{ base: "sm", md: "md" }}>Verifying...</Heading>
+            )}
+
+            {verificationStatus.success && (
+              <Heading size={{ base: "sm", md: "md" }}>
+                Your account has been successfully verified
+              </Heading>
+            )}
+
+            <Text
+              color="fg.muted"
+              maxW="2xl"
+              textAlign="center"
+              fontSize="xl"
+            >
+              {verificationStatus.success && (
+                <>You can now login and start creating beautiful images.</>
+              )}
+
+              {verificationStatus.error && (
+                <>
+                  Verification failed. Please try again or contact support for
+                  help.
+                </>
+              )}
+            </Text>
+          </Stack>
           {verificationStatus.success && (
-            <>
-              <p>
-                Your account has been successfully verified. You can now log in.
-              </p>
-              <LoginForm />
-            </>
+            <Stack
+              spacing="3"
+              direction={{ base: "column", sm: "row" }}
+              justify="center"
+            >
+              <Button
+                size="xl"
+                onClick={() => goto("/login")}
+              >
+                Click here to login
+              </Button>
+            </Stack>
           )}
-          {verificationStatus.error && (
-            <p>
-              Verification failed. Please try again or contact support for help.
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
+        </Stack>
+      </Container>
+    </Box>
   );
 };
 

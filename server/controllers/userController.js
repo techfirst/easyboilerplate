@@ -137,16 +137,16 @@ const sendVerificationEmail = async (res, name, email, token) => {
       Subject: "Verify your e-mail",
       TextBody: `Hello ${name},
         
-  Welcome to ${process.env.SYSTEM_NAME} - We are glad that you want to join us. To complete your registration and activate your account, please click the link below:
+Welcome to ${process.env.SYSTEM_NAME} - We are glad that you want to join us. To complete your registration and activate your account, please click the link below:
   
-  ${process.env.BASE_URL}/verify-user/${token}
+${process.env.BASE_URL}/verify-user/${token}
   
-  If you cannot click on the link, copy and paste it into your web browser.
+If you cannot click on the link, copy and paste it into your web browser.
   
-  If you did not request this e-mail, you can ignore it. It is possible that someone else has accidentally entered your email address.
+If you did not request this e-mail, you can ignore it. It is possible that someone else has accidentally entered your email address.
   
-  Best regards,
-  ${process.env.SYSTEM_NAME}`,
+Best regards,
+${process.env.SYSTEM_NAME}`,
     });
 
     // Send success response
