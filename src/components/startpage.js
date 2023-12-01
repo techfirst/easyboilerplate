@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Features } from "./features";
-import EasySetupImage from "../assets/images/easysetup_collage.png";
+import EasySetupImage from "../assets/images/robot.png";
 // import StripePriceTable from "./stripepricetable";
 
 const StartPage = () => {
