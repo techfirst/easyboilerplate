@@ -3,7 +3,16 @@ import axios from "axios";
 import { UserContext } from "../../contexts/userProvider";
 import { Link } from "react-router-dom";
 import StripePriceTable from "../stripepricetable";
-
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Image,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import StripeLogo from "../../assets/images/stripe.png";
 const Subscription = () => {
   const { user } = useContext(UserContext);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
@@ -35,35 +44,114 @@ const Subscription = () => {
     }
   }, [user.email]);
 
-  if (isLoading) {
-    return (
-      <div className="form-container">
-        <div className="form-box">Loading ...</div>
-      </div>
-    );
-  }
+  const gotoPortal = () => {
+    window.open(process.env.REACT_APP_STRIPE_CUSTOMER_PORTAL_LINK, "_blank");
+  };
 
   return (
-    <div className="form-container">
-      {error ? (
-        <div className="form-box">
-          <p className="error-message">{error}</p>
-        </div>
-      ) : hasActiveSubscription ? (
-        <div className="form-box">
-          You already have an active subscription. To manage your subscription,
-          please visit the{" "}
-          <Link to={process.env.REACT_APP_STRIPE_CUSTOMER_PORTAL_LINK}>
-            Stripe Customer Portal
-          </Link>
-          .
-        </div>
-      ) : (
-        <div className="form-box">
-          <StripePriceTable />
-        </div>
-      )}
-    </div>
+    <Box as="section">
+      <Container py={{ base: "16", md: "24" }}>
+        <Stack spacing={{ base: "8", md: "10" }}>
+          <Stack
+            spacing={{ base: "4", md: "5" }}
+            align="center"
+          >
+            {isLoading ? (
+              <>
+                <Heading size={{ base: "sm", md: "md" }}>
+                  Loading subscription status ...
+                </Heading>
+              </>
+            ) : hasActiveSubscription ? (
+              <>
+                <Heading size={{ base: "sm", md: "md" }}>
+                  You already have an active subscription
+                </Heading>
+              </>
+            ) : (
+              <>
+                <Heading size={{ base: "sm", md: "md" }}>
+                  Our different subscriptions
+                </Heading>
+              </>
+            )}
+
+            {!isLoading && error ? (
+              <>
+                <Text
+                  color="fg.muted"
+                  maxW="2xl"
+                  textAlign="center"
+                  fontSize="xl"
+                >
+                  {error}
+                </Text>
+              </>
+            ) : hasActiveSubscription ? (
+              <>
+                <Text
+                  color="fg.muted"
+                  maxW="2xl"
+                  textAlign="center"
+                  fontSize="xl"
+                >
+                  To manage your subscription, please visit the
+                  <br />
+                  Stripe Customer Portal
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text
+                  color="fg.muted"
+                  maxW="2xl"
+                  textAlign="center"
+                  fontSize="xl"
+                >
+                  Choose the one best suited for your needs and get started
+                  creating beautiful images.
+                </Text>
+              </>
+            )}
+          </Stack>
+          {!isLoading &&
+            (hasActiveSubscription ? (
+              <>
+                <Stack
+                  spacing="3"
+                  direction={{ base: "column", sm: "row" }}
+                  justify="center"
+                >
+                  <Button
+                    size="xl"
+                    onClick={gotoPortal}
+                  >
+                    Stripe Customer Portal
+                  </Button>
+                </Stack>
+                <Stack
+                  spacing="3"
+                  direction={{ base: "column", sm: "row" }}
+                  justify="center"
+                >
+                  <Link
+                    to="https://stripe.com"
+                    target="_blank"
+                  >
+                    <Image
+                      style={{ maxWidth: "120px" }}
+                      src={StripeLogo}
+                      alt="Powered by Stripe"
+                    />
+                  </Link>
+                </Stack>
+              </>
+            ) : (
+              <StripePriceTable />
+            ))}
+        </Stack>
+      </Container>
+    </Box>
   );
 };
 

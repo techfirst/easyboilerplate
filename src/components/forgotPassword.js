@@ -9,7 +9,6 @@ import {
   FormLabel,
   Heading,
   Input,
-  Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
