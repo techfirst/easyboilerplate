@@ -109,7 +109,7 @@ const Subscription = () => {
                   fontSize="xl"
                 >
                   Choose the one best suited for your needs and get started
-                  creating beautiful images.
+                  creating.
                 </Text>
               </>
             )}
