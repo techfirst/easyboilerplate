@@ -11,6 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Features } from "./features";
+import EasySetupImage from "../assets/images/easysetup_collage.png";
 // import StripePriceTable from "./stripepricetable";
 
 const StartPage = () => {
@@ -89,7 +90,7 @@ const StartPage = () => {
               <Img
                 boxSize="full"
                 objectFit="cover"
-                src="https://images.squarespace-cdn.com/content/v1/6213c340453c3f502425776e/02999b9b-8f7f-4da9-a2af-b6ed5dbf55b2/sdxl_clipdrop-background-removal_clipdrop-enhance+1.png?format=2500w"
+                src={EasySetupImage}
                 alt="EasySetup"
               />
             </Box>
