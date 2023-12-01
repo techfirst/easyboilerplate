@@ -50,12 +50,10 @@ export const Header = () => {
 
   return (
     <Box
-      as="nav"
-      role="navigation"
-      position="sticky"
-      top="0"
-      zIndex="docked"
+      borderBottomWidth="1px"
       bg="bg.surface"
+      position="relative"
+      zIndex="tooltip"
       {...rootProps}
     >
       <Container py="4">
@@ -110,6 +108,7 @@ export const Header = () => {
               <MobileDrawer
                 isOpen={mobileNavbar.isOpen}
                 onClose={mobileNavbar.onClose}
+                closeDrawer={mobileNavbar.onClose}
               />
             </>
           )}
