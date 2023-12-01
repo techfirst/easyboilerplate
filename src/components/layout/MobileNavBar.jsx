@@ -40,8 +40,8 @@ export const MobileDrawer = ({ closeDrawer, ...props }) => {
       placement="right"
       {...props}
     >
-      <DrawerContent>
-        <DrawerBody mt="16">
+      <DrawerContent style={{ position: "absolute", top: "73px" }}>
+        <DrawerBody>
           <Stack
             spacing="6"
             align="stretch"

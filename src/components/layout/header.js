@@ -52,8 +52,9 @@ export const Header = () => {
     <Box
       borderBottomWidth="1px"
       bg="bg.surface"
-      position="relative"
-      zIndex="tooltip"
+      position="sticky"
+      top="0"
+      zIndex="docked"
       {...rootProps}
     >
       <Container py="4">
