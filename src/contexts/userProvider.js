@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   async function refreshUserToken() {
-    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     try {
       const response = await axios.post(

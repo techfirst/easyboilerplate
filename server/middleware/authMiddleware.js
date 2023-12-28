@@ -16,12 +16,12 @@ async function authMiddleware(req, res, next) {
         };
         next();
       } else {
-        console.log(
-          "Auth Middleware: No refresh token or refresh token invalid"
-        );
+        // console.log(
+        //   "Auth Middleware: No refresh token or refresh token invalid"
+        // );
       }
     } catch (error) {
-      console.error("Auth Middleware Error:", error);
+      // console.error("Auth Middleware Error:", error);
       return res
         .status(500)
         .json({ success: false, message: "Internal Server Error." });

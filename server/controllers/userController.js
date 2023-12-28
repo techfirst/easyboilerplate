@@ -148,12 +148,8 @@ If you did not request this e-mail, you can ignore it. It is possible that someo
 Best regards,
 ${process.env.SYSTEM_NAME}`,
     });
-
-    // Send success response
-    res.json({ message: "Email sent successfully.", response });
   } catch (error) {
     console.error("Error sending email via Postmark: ", error);
-    // Check if headers have already been sent
     if (!res.headersSent) {
       res.status(500).json({ error: "Failed to send email." });
     }
@@ -225,7 +221,7 @@ const refreshToken = async (req, res) => {
       maxAge: 900000,
     });
 
-    res.json({ success: true, user: { userId: user.id, email: user.email } });
+    res.json({ success: true, user: user });
   } catch (error) {
     console.error("Refresh token error:", error);
     return res
@@ -288,9 +284,21 @@ const getUser = async (req, res) => {
     const userId = req.user.user_id;
     const result = await pool.query(
       `
-        SELECT firstname, lastname, email, company_name, is_verified
+        SELECT users.id, 
+        users.firstname, 
+        users.lastname, 
+        users.email, 
+        users.company_name, 
+        users.is_verified, 
+        users.subscription_id, 
+        users.credits, 
+        users.subscription_start_date,
+        users.subscription_end_date,
+        subscriptions.name AS subscription_name,
+        subscriptions.price AS subscription_price
         FROM users
-        WHERE id = $1
+        LEFT JOIN subscriptions ON users.subscription_id = subscriptions.id
+        WHERE users.id = $1
       `,
       [userId]
     );
@@ -315,9 +323,19 @@ const getUserById = async (userId) => {
   try {
     const result = await pool.query(
       `
-        SELECT firstname, lastname, email, company_name, is_verified
+        SELECT users.id, 
+        users.firstname, 
+        users.lastname, 
+        users.email, 
+        users.company_name, 
+        users.is_verified, 
+        users.subscription_id, 
+        users.credits, 
+        subscriptions.name AS subscription_name,
+        subscriptions.price AS subscription_price
         FROM users
-        WHERE id = $1
+        LEFT JOIN subscriptions ON users.subscription_id = subscriptions.id
+        WHERE users.id = $1
       `,
       [userId]
     );
@@ -446,6 +464,7 @@ async function invalidateToken(token) {
     throw new Error("Failed to invalidate token.");
   }
 }
+
 const updateUserProfile = async (req, res) => {
   // Extract user ID from the request object
   const userId = req.user.user_id;

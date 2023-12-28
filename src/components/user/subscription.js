@@ -18,6 +18,8 @@ const Subscription = () => {
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showBuyButton, setShowBuyButton] = useState(false);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -46,6 +48,51 @@ const Subscription = () => {
 
   const gotoPortal = () => {
     window.open(process.env.REACT_APP_STRIPE_CUSTOMER_PORTAL_LINK, "_blank");
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/user/getuser`,
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          const userData = response.data.user;
+          const today = new Date();
+          let showButton = false;
+
+          if (
+            userData.subscription_start_date &&
+            userData.subscription_end_date
+          ) {
+            const startDate = new Date(userData.subscription_start_date);
+            const endDate = new Date(userData.subscription_end_date);
+
+            // Check if today's date is between start and end dates
+            if (startDate <= today && today <= endDate) {
+              showButton = true;
+            }
+          }
+
+          setShowBuyButton(showButton);
+          setUserId(userData.id);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const gotoBuyCredits = () => {
+    window.open(
+      process.env.REACT_APP_STRIPE_BUY_CREDITS_LINK +
+        "?client_reference_id=" +
+        userId,
+      "_blank"
+    );
   };
 
   return (
@@ -95,9 +142,17 @@ const Subscription = () => {
                   textAlign="center"
                   fontSize="xl"
                 >
-                  To manage your subscription, please visit the
-                  <br />
-                  Stripe Customer Portal
+                  Here you can manage your current subscription by visting our
+                  payment partner <b>Stripe</b> and their <b>Customer Portal</b>
+                  {showBuyButton && (
+                    <>
+                      <br />
+                      <br />
+                      Be sure to use the same e-mail address ({user.email}) in
+                      the checkout when you buy credits as you have registered
+                      here on EasyImageAI.com
+                    </>
+                  )}
                 </Text>
               </>
             ) : (
@@ -128,6 +183,16 @@ const Subscription = () => {
                   >
                     Stripe Customer Portal
                   </Button>
+                  {showBuyButton && (
+                    <>
+                      <Button
+                        size="xl"
+                        onClick={gotoBuyCredits}
+                      >
+                        Buy credits
+                      </Button>
+                    </>
+                  )}
                 </Stack>
                 <Stack
                   spacing="3"
